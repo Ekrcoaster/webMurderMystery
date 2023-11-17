@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=500, initial-scale=1.0">
+    <title>Murder Mystery</title>
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/index.css">
+</head>
+<body>
+    <img class="backgroundImage" id="backgroundImage" src="./backgrounds/background3.jpg">
+    <img class="backgroundImage" id="staticImage" src="./backgrounds/static.gif">
+    <h1>FNAF murder mystery</h1>
+
+    <div id="page">
+        <div id="centerLogo">
+            <img id="fnafLogo" class="jitter" src="./backgrounds/fnafLogo.png">
+            <img id="mmLogo" class="jitter" src="./backgrounds/murderMystery.png">
+        </div>
+        <div id="joinPanel" class="jitter">
+            <span style="font-size: 45px; color: white;">Welcome to Murder Mystery!</span><br><br>To begin, enter your name down below!<br><br>
+            <label>Your Name:</label><br>
+            <input type="text" id="joinName" placeholder="Enter your name..."><br>
+            <button onclick="joinGame()">Join Game</button>
+        </div>
+        <button id="createButton" onclick="createGame()">Create Game</button>
+    </div>
+
+    <script src="./artist.js"></script>
+    <script src="./backgroundAnimate.js"></script>
+    <script>
+        animateBackground();
+    </script>
+    <script>
+        function joinGame() {
+            let name = document.getElementById("joinName").value;
+            if(name == null || name.trim().length < 2) {ERROR("Enter a valid name!"); return;}
+
+            POST("/joinGame", {
+                "name": name
+            }).then((res) => {
+                window.location.href = "/app/lobby.html"
+            }).catch((err) => {
+                ERROR(err);
+            });
+        }
+        function createGame() {
+            let name = document.getElementById("joinName").value;
+            if(name == null || name.trim().length < 2) {ERROR("Enter a valid name!"); return;}
+            
+            if(!confirm("Are you sure? This will destroy any existing lobbies!")) return;
+            POST("/createGame", {
+                "name": name
+            }).then((res) => {
+                window.location.href = "/app/lobby.html"
+            }).catch((err) => {
+                ERROR(err);
+            });
+        }
+    </script>
+</body>
+</html>
