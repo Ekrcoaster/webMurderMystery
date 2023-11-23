@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=200, initial-scale=1.0">
+    <title>Night - Murder Mystery</title>
+    <link rel="stylesheet" href="../css/main.css">
+    <link rel="stylesheet" href="./night.css">
+</head>
+<body>
+    <img class="backgroundImage" id="staticImage" src="../assets/static.gif">
+
+    <div id="page">
+        <h1 style="opacity: 0.2;" class="jitter nightLabel">Night 1</h1>
+        <p class="jitter" id="instructions">You are a SURVIVOR! You have been given your task for the night. Once you complete it, press done!</p>
+        
+        <div id="taskContainer">
+            <div class="container jitter">
+                <p id="taskTitle" class="jitter">Your Task:</p>
+                <p id="task" class="jitter">Steal someone's drink and move it</p>
+                <button id="completedTaskButton" class="jitter">I completed this task!</button>
+            </div>
+        </div>
+
+        <p id="tasksCompletedLabel" class="jitter">1/1 Tasks Completed</p>
+
+        <div id="tipContainer" class="jitter">
+            <img class="jitter" src="../assets/TheWarningSign.webp">
+            <p class="jitter"><span class="strong">Rumor has it...</span><br>The killers have been tasked with <span id="killerHint">killing a person or something</span>...</p>
+        </div>
+    </div>
+
+    <div id="nightOverlay">
+        <p style="opacity: 0;" id="nightIntroduceLabel" class="jitter nightLabel">Night 1</p>
+        <p style="opacity: 0;" id="nightSubtitleLabel" class="jitter">2 Killers Remain...</p>
+    </div>
+    <img src="../assets/static.gif" id="nightTransition" class="fadeInStatic">
+
+    <script src="../artist.js"></script>
+    <script src="./night.js"></script>
+    <script src="../backgroundAnimate.js"></script>
+</body>
+</html>

@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=200, initial-scale=1.0">
+    <title>Murder Mystery</title>
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/index.css">
+</head>
+<body>
+    <img style="opacity: 0.1;" class="backgroundImage" id="staticImage" src="./assets/static.gif">
+    <div id="page">
+        <h1>Create Game</h1>
+
+        <div id="joinPanel" class="jitter container">
+            <span style="font-size: 45px; color: white;">Welcome to Murder Mystery!</span>
+            <br><br>To begin, enter your name down below!<br><br>
+            <label>Your Name:</label><br>
+            <input type="text" id="joinName" placeholder="Enter your name..."><br><br>
+            <button onclick="createGame()" id="joinButton">Create Game</button>
+        </div>
+    </div>
+
+    <script src="./artist.js"></script>
+    <script>
+        function createGame() {
+            let name = document.getElementById("joinName").value;
+            if(name == null || name.trim().length < 2) {ERROR("Enter a valid name!"); return;}
+            
+            POST("/createGame", {
+                "name": name
+            }).then((res) => {
+                window.location.href = "/app/lobby.html"
+            }).catch((err) => {
+                ERROR(err);
+            });
+        }
+    </script>
+</body>
+</html>

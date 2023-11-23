@@ -2,29 +2,31 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=500, initial-scale=1.0">
+    <meta name="viewport" content="width=200, initial-scale=1.0">
     <title>Murder Mystery</title>
     <link rel="stylesheet" href="css/main.css">
     <link rel="stylesheet" href="css/index.css">
 </head>
 <body>
-    <img class="backgroundImage" id="backgroundImage" src="./backgrounds/background3.jpg">
-    <img class="backgroundImage" id="staticImage" src="./backgrounds/static.gif">
+    <img class="backgroundImage" id="backgroundImage" src="./assets/background3.jpg">
+    <img class="backgroundImage" id="staticImage" src="./assets/static.gif">
     <h1>FNAF murder mystery</h1>
 
     <div id="page">
         <div id="centerLogo">
-            <img id="fnafLogo" class="jitter" src="./backgrounds/fnafLogo.png">
-            <img id="mmLogo" class="jitter" src="./backgrounds/murderMystery.png">
+            <img id="fnafLogo" class="jitter" src="./assets/fnafLogo.png">
+            <img id="mmLogo" class="jitter" src="./assets/murderMystery.png">
         </div>
-        <div id="joinPanel" class="jitter">
+        <div id="joinPanel" class="jitter container">
             <span style="font-size: 45px; color: white;">Welcome to Murder Mystery!</span><br><br>To begin, enter your name down below!<br><br>
             <label>Your Name:</label><br>
             <input type="text" id="joinName" placeholder="Enter your name..."><br>
-            <button onclick="joinGame()">Join Game</button>
+            <button onclick="joinGame()" id="joinButton">Join Game</button>
         </div>
-        <button id="createButton" onclick="createGame()">Create Game</button>
+        <button id="createButton" onclick="window.location.href ='/create.html'">Create Game</button>
     </div>
+
+    <img src="./assets/static.gif" class="fadeInStatic">
 
     <script src="./artist.js"></script>
     <script src="./backgroundAnimate.js"></script>
@@ -32,15 +34,27 @@
         animateBackground();
     </script>
     <script>
-        function joinGame() {
+        let cookies = GET_COOKIES();
+        if(cookies.session != null) {
+            if(true || confirm("Reconnect as " + cookies.session.name + "?")) {
+                document.getElementById("joinName").value = cookies.session.name;
+                joinGame(true);
+            }
+        }
+        function joinGame(temp) {
             let name = document.getElementById("joinName").value;
             if(name == null || name.trim().length < 2) {ERROR("Enter a valid name!"); return;}
 
             POST("/joinGame", {
                 "name": name
             }).then((res) => {
+                if(res.redirect != null) {
+                    window.location.href = res.redirect;
+                    return;
+                }
                 window.location.href = "/app/lobby.html"
             }).catch((err) => {
+                if(!temp)
                 ERROR(err);
             });
         }
@@ -48,7 +62,6 @@
             let name = document.getElementById("joinName").value;
             if(name == null || name.trim().length < 2) {ERROR("Enter a valid name!"); return;}
             
-            if(!confirm("Are you sure? This will destroy any existing lobbies!")) return;
             POST("/createGame", {
                 "name": name
             }).then((res) => {

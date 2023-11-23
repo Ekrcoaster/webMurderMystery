@@ -11,7 +11,7 @@ const app = express();
 
 app.use(bodyParser.json());
 app.use(cookieParser());
-app.use("/app/", (req, res, next) => {
+app.use("/app/*.html", (req, res, next) => {
     if(getActiveSession(req.cookies.session?.name) == null) {
         res.redirect("/index.html");
     } else {
@@ -36,7 +36,7 @@ server.on("upgrade", (request, socket, head) => {
 });
 
 wsServer.on('connection', (ws) => {
-    console.log("Client connected");
+    console.log("Someone joined... " + wsServer.clients.size);
 
     ws.on('message', (message, isBinary) => {
         const msg = isBinary ? message : message.toString();
@@ -44,8 +44,8 @@ wsServer.on('connection', (ws) => {
     });
 
     ws.on('close', () => {
+        console.log("Someone left... " + wsServer.clients.size);
         ROOT.GAME.ON_SOCKET_DISCONNECT(ws);
-        console.log("Client disconnected");
     }); 
 });
 
@@ -58,8 +58,13 @@ app.post("/joinGame", (req, res) => {
     ROOT.GAME.JOIN_GAME(req.body.name).then((data) => {
         let ses = addSession(req.body.name);
         res.cookie("session", ses, {"maxAge": ses.expires});
+        if(data == "REDIRECT") {
+            //res.json({redirect: "/app/reconnect.html"});
+            //return;
+        }
         res.json(data);
     }).catch((err) => {
+        console.log("errrpr" + err);
         res.json({"error": err});
     });
 });
@@ -93,10 +98,27 @@ app.post("/startGame", (req, res) => {
     ROOT.GAME.START_GAME().then((data) => {
         res.json(data);
     }).catch((err) => {
+        console.log(err);
         res.json({"error": err});
     });
 });
 
+app.get("/getGame/:USERNAME", (req, res) => {
+    ROOT.GAME.GET_GAME(req.params.USERNAME).then((data) => {
+        res.json(data);
+    }).catch((err) => {
+        res.json({"error": err});
+    });
+});
+
+app.post("/completeTask", (req, res) => {
+    ROOT.GAME.COMPLETE_TASK(req.body.name, req.body.index).then((data) => {
+        console.log(data);
+        res.json(data);
+    }).catch((err) => {
+        res.json({"error": err});
+    });
+})
 
 // -----------------
 //    SESSIONS

@@ -28,3 +28,65 @@ html, body {
     left: 0px;
     width: 100%;
 }
+
+.container {
+    border: 3px solid rgba(255, 255, 255, 0.519);
+    background-color: rgba(0, 0, 0, 0.419);
+    margin: auto;
+    text-align: left;
+    padding: 20px;
+    color: rgba(255, 255, 255, 0.494);
+    font-size: 25px;
+    overflow-y: auto;
+}
+
+h1 {
+    color: rgba(255, 255, 255, 0.9);
+    text-align: center;
+    font-size: 120px;
+    margin: 10px;
+    font-weight: normal;
+}
+
+button {
+    background-color: rgba(50, 50, 50, 0.641);
+    border: 1px dashed gray;
+    color: rgb(255, 255, 255);
+    font-size: 20px;
+    font-family: 'VT323', monospace;
+}
+
+p {
+    color: rgba(255, 255, 255, 0.468);
+    text-align: center;
+}
+
+.fadeInStatic {
+    position: fixed;
+    left: 0px;
+    top: 0px;
+    width: 100%;
+    height: 100%;
+    z-index: 10;
+
+    pointer-events: none;
+
+    animation: fadeInAnimation ease 2s;
+    animation-delay: 0.2s;
+    animation-iteration-count: 1;
+    animation-fill-mode: forwards;
+}
+
+@keyframes fadeInAnimation {
+    0% {
+        opacity: 1;
+    }
+    100% {
+        opacity: 0;
+    }
+}
+
+.strong {
+    font-size: 35px;
+    font-weight: bold;
+}

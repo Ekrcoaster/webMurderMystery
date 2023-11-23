@@ -19,9 +19,9 @@
 
 #createButton {
     position: absolute;
-    width: 100px;
+    width: 150px;
     left: 50%;
-    transform: translate(-50px, 0px);
+    transform: translate(-75px, 0px);
     bottom: 20px;
     background-color: transparent;
     color: rgba(128, 128, 128, 0.431);
@@ -32,14 +32,7 @@
 #joinPanel {
     width: calc(min(95%, 300px));
     height: 300px;
-    border: 3px solid rgba(255, 255, 255, 0.519);
-    background-color: rgba(0, 0, 0, 0.419);
-    margin: auto;
-    margin-top: 50px;
-    text-align: left;
-    padding: 20px;
-    color: rgba(255, 255, 255, 0.494);
-    font-size: 25px;
+    margin-top: 20px;
 }
 
 #joinPanel input {
@@ -59,10 +52,5 @@
 }
 
 #joinPanel button {
-    background-color: rgba(50, 50, 50, 0.641);
-    border: 1px dashed gray;
     margin-top: 5px;
-    color: rgb(255, 255, 255);
-    font-size: 20px;
-    font-family: 'VT323', monospace;
 }

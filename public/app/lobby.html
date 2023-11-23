@@ -2,19 +2,31 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=500, initial-scale=1.0">
+    <meta name="viewport" content="width=200, initial-scale=1.0">
     <title>Lobby - Murder Mystery</title>
     <link rel="stylesheet" href="../css/main.css">
+    <link rel="stylesheet" href="./lobby.css">
 </head>
 <body>
-    <h1>FNAF murder mystery</h1>
-    welcome to the lobby
+    <img class="backgroundImage" id="backgroundImage" src="../assets/background3.jpg">
+    <img class="backgroundImage" id="staticImage" src="../assets/static.gif">
 
-    <div id="lobbyList">
+    <div id="page">
+        <h1 class="jitter">LOBBY</h1>
+        <div id="lobbyList" class="container jitter">
 
+        </div>
+        <button id="startButton" class="jitter">Start Game!</button>
+        <p>Make sure no players are loading before starting!</p>
     </div>
-    <button id="startButton">Start Game!</button>
+
+    <img src="../assets/static.gif" class="fadeInStatic">
+
     <script src="../artist.js"></script>
     <script src="./lobby.js"></script>
+    <script src="../backgroundAnimate.js"></script>
+    <script>
+        animateBackground(".");
+    </script>
 </body>
 </html>

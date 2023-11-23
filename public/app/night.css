@@ -1,0 +1,130 @@
+#nightOverlay {
+    position: fixed;
+    left: 0px;
+    top: 0px;
+    width: 100%;
+    height: 100%;
+    background-color: black;
+    z-index: 5;
+}
+
+#nightOverlay p {
+    margin: auto;
+    color: white;
+    font-size: 35px;
+    position: relative;
+    height: 35px;
+    top: 50%;
+    transform: translateY(-17.5px);
+}
+
+#nightTransition {
+    display: none;
+}
+
+#nightIntroduceLabel {
+    animation: nightIntroduceFadeIn ease 2s;
+    animation-delay: 0.2s;
+    animation-iteration-count: 1;
+    animation-fill-mode: forwards;
+}
+
+#nightSubtitleLabel {
+    animation: nightIntroduceSubtitleFadeIn ease 2s;
+    animation-delay: 1.4s;
+    animation-iteration-count: 1;
+    animation-fill-mode: forwards;
+}
+
+@keyframes nightIntroduceFadeIn {
+    0% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
+}@keyframes nightIntroduceSubtitleFadeIn {
+    0% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 0.1;
+    }
+}
+
+#staticImage {
+    opacity: 0.1;
+}
+
+.container {
+    width: calc(min(70%, 600px));
+}
+
+#instructions {
+    padding: 20px;
+    font-size: 25px;
+}
+
+#task {
+    font-size: 40px;
+    color: rgb(158, 23, 23);
+    margin: 0px;
+}
+
+#completedTaskButton {
+    margin:0 auto;
+    margin-top: 20px;
+    display:block;
+}
+
+#taskTitle {
+    margin-top:0px;
+    opacity: 0.5;
+}
+
+#tipContainer {
+    position: fixed;
+    bottom: 10px;
+    left: 10px;
+    right: 10px;
+    height: 60px;
+    
+    border: 3px solid rgba(255, 255, 255, 0.16);
+    background-color: rgba(0, 0, 0, 0.419);
+    margin: auto;
+    text-align: left;
+    padding: 20px;
+    color: rgba(255, 255, 255, 0.494);
+    font-size: 20px;
+
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+}
+
+#tipContainer img {
+    height: 60px;
+    width: 60px;
+}
+
+#tipContainer p {
+    flex: 1;
+    text-align: left;
+    margin-left: 20px;
+}
+
+#taskContainer {
+    overflow-y: scroll;
+}
+
+.taskBox {
+    max-height: 180px;
+    margin-top: 5px;
+    margin-bottom: 5px;
+}
+
+.taskCompleted {
+    opacity: 0.2;
+    pointer-events: none;
+}

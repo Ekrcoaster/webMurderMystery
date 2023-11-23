@@ -1,0 +1,33 @@
+#lobbyList {
+    width: calc(min(70%, 500px));
+    height: calc(min(60%, 600px));
+}
+
+#startButton {
+    margin: auto;
+    margin-top: 25px;
+    font-size: 25px;
+    padding: 25px;
+}
+
+.lobbyItem {
+    background-color: rgba(0, 0, 0, 0.613);
+    display: flex;
+    border: 1px solid rgba(255, 255, 255, 0.519);
+    flex-direction: row;
+    height: 100px;
+    margin-bottom: 20px;
+}
+
+.lobbyItem img {
+    flex: 1;
+    max-width: 100px;
+    margin-right: 20px;
+}
+
+.lobbyItem p {
+    flex: 1;
+    margin: auto;
+    text-align: left;
+    font-size: 45px;
+}
