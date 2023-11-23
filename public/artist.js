@@ -32,6 +32,7 @@ function POST(url, data) {
 }
 
 function ERROR(text) {
+    console.trace(text);
     if(typeof(text) == "object") text = JSON.stringify(text);
     alert(text);
 }
@@ -52,6 +53,8 @@ function GET_COOKIES() {
 
 /**@type {WebSocket} */
 let ws = null;
+
+let wsListeners = new Set();
 
 function SETUP_WEBSOCKET(onOpen = () => {}) {
     // if this happens to get run while the websocket is still fine, ignore
@@ -146,4 +149,12 @@ function ON_WEBSOCKET(data) {
 
     if(data.type == "redirect")
         window.location.href = data.url;
+
+    wsListeners.forEach((listener) => {
+        listener(data);
+    });
+}
+
+function addWSListener(callback = (data) => {}) {
+    wsListeners.add(callback);
 }

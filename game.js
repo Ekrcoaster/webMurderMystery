@@ -18,6 +18,9 @@ class Lobby {
         if(this.getPlayer(player.name) != null)
             throw "Player already exists";
 
+        for(let i = 0; i < this.players.length; i++)
+            this.players[i].sendMessage({"type": "update"});
+
         this.players.push(player);
     }
 
@@ -149,9 +152,9 @@ class Game {
         for(let i = 0; i < this.killers.length; i++) {
             this.killers[i].onBeginRound();
             if(i == 0) {
-                chosenKillerTasks = this.killers[i].chooseTasks(tasks.killers);
+                chosenKillerTasks = this.killers[i].chooseTasks(Object.keys(tasks.killers));
             } else {
-                this.killers[i].tasks = chosenKillerTasks;
+                this.killers[i].tasks = this.killers[0].tasks;
             }
         }
     }
@@ -177,6 +180,10 @@ class Game {
         let task = killerTasks[this.roundCount % killerTasks.length].task;
 
         return tasks.killers[task];
+    }
+
+    getRandomSurvivorTask() {
+        return tasks.survivor[(this.roundCount * 100 + 524) % tasks.survivor.length];
     }
 }
 
@@ -219,6 +226,8 @@ class Person {
         this.socket = data.socket || null;
 
         this._socketDisconnectedQueue = [];
+        this.tasksNeeded = 1;
+        this.tasksGiven = 1;
     }
 
     /**@returns {Person} */
@@ -252,8 +261,6 @@ class Person {
     }
 
     gameStart() {
-        this.tasksNeeded = 1;
-        this.tasksGiven = 1;
     }
     
     getType() { return "LobbyPlayer" }
@@ -409,7 +416,7 @@ exports.START_GAME = () => {
 
         GAME = new Game();
 
-        let killers = new Set(["Mac"]);
+        let killers = new Set(["test", "Phone"]);
 
         // distrubute players
         for(let i = 0; i < LOBBY.players.length; i++) {
@@ -437,24 +444,23 @@ exports.START_GAME = () => {
 }
 
 exports.GET_GAME = (username) => {
-    return new Promise((resolve, reject) => {
-        if(GAME == null) {reject("Game doesn't exist!");}
+    if(GAME == null) return "Game doesn't exist!";
 
-        let myPlayer = GAME.getPlayer(username);
-        if(myPlayer == null) {reject("Player doesn't exist: " + username)}
-    
-        resolve({
-            "role": myPlayer.getType(),
-            "roundCount": GAME.roundCount,
-            "state": GAME.state,
-            "intendedPage": GAME.getIntendedPage(),
-            "killersLeft": GAME.getKillersLeft(),
-            "tasks": myPlayer.exportTasks(),
-            "tasksNeeded": myPlayer.tasksNeeded,
-            "tasksCompleted": myPlayer.getCompletedTasks(),
-            "killerHint": GAME.getKillerHint()
-        });
-    });
+    let myPlayer = GAME.getPlayer(username);
+    if(myPlayer == null) return "Player doesn't exist!";
+
+    return {
+        "role": myPlayer.getType(),
+        "roundCount": GAME.roundCount,
+        "state": GAME.state,
+        "intendedPage": GAME.getIntendedPage(),
+        "killersLeft": GAME.getKillersLeft(),
+        "tasks": myPlayer.exportTasks(),
+        "tasksNeeded": myPlayer.tasksNeeded,
+        "tasksCompleted": myPlayer.getCompletedTasks(),
+        "killerHint": GAME.getKillerHint(),
+        "randomSurvivorTask": GAME.getRandomSurvivorTask()
+    };
 }
 
 exports.COMPLETE_TASK = (username, taskIndex) => {
@@ -464,15 +470,13 @@ exports.COMPLETE_TASK = (username, taskIndex) => {
         let myPlayer = GAME.getPlayer(username);
         if(myPlayer == null) {reject("Player doesn't exist: " + username)};
 
-        myPlayer.completeTask(taskIndex);
+        console.log("COMPLETD TASK");
 
-        exports.GET_GAME(username).then((data) => {
-            resolve({
-                "game": data
-            });
-        }).catch((err) => {
-            reject(err);
-        })
+        myPlayer.completeTask(taskIndex);
+        
+        resolve({
+            "game": exports.GET_GAME(username)
+        });
     });
 }
 

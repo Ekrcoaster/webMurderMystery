@@ -42,3 +42,8 @@ function updateLobbyList(list) {
 
     updateJitterList();
 }
+
+addWSListener((data) => {
+    if(data.type == "update")
+        refresh();
+})

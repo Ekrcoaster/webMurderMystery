@@ -64,8 +64,7 @@ app.post("/joinGame", (req, res) => {
         }
         res.json(data);
     }).catch((err) => {
-        console.log("errrpr" + err);
-        res.json({"error": err});
+        res.json({"error": err.toString()});
     });
 });
 
@@ -78,11 +77,11 @@ app.post("/createGame", (req, res) => {
             res.cookie("session", ses, {"maxAge": ses.expires});
             res.json(data);
         }).catch((err) => {
-            res.json({"error": err});
+            res.json({"error": err.toString()});
         });
 
     }).catch((err) => {
-        res.json({"error": err});
+        res.json({"error": err.toString()});
     });
 });
 
@@ -90,7 +89,7 @@ app.get("/getLobby", (req, res) => {
     ROOT.GAME.GET_LOBBY().then((data) => {
         res.json(data);
     }).catch((err) => {
-        res.json({"error": err});
+        res.json({"error": err.toString()});
     });
 });
 
@@ -98,25 +97,23 @@ app.post("/startGame", (req, res) => {
     ROOT.GAME.START_GAME().then((data) => {
         res.json(data);
     }).catch((err) => {
-        console.log(err);
-        res.json({"error": err});
+        res.json({"error": err.toString()});
     });
 });
 
 app.get("/getGame/:USERNAME", (req, res) => {
-    ROOT.GAME.GET_GAME(req.params.USERNAME).then((data) => {
-        res.json(data);
-    }).catch((err) => {
-        res.json({"error": err});
-    });
+    let game = ROOT.GAME.GET_GAME(req.params.USERNAME);
+    if(typeof(game) == "string")
+        res.json({"error": game});
+    else
+        res.json(game);
 });
 
 app.post("/completeTask", (req, res) => {
     ROOT.GAME.COMPLETE_TASK(req.body.name, req.body.index).then((data) => {
-        console.log(data);
         res.json(data);
     }).catch((err) => {
-        res.json({"error": err});
+        res.json({"error": err.toString()});
     });
 })
 

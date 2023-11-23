@@ -24,21 +24,27 @@ function onGameUpdate(game) {
 
     if(game.role == "Survivor") {
         document.getElementById("instructions").innerHTML = `You are a MISSING CHILD! You have been given your task for the night. Once you complete it, press done!`
+        document.getElementById("killerHint").innerText = `The killers have been tasked with ${game.killerHint}...`;
+        document.getElementById("rumorText").innerText = "Rumor has it...";
     } else if(game.role == "Killer") {
-        document.getElementById("instructions").innerHTML = `You are WILLIAM AFTON (the killer)! You've been given a bunch of tasks, you must complete 1 of them before the night is up, otherwise you'll be springlocked! If you complete 3 of them, you can kill a child!`
+        document.getElementById("instructions").innerHTML = `You are WILLIAM AFTON (the killer)! You've been given a bunch of tasks, you must complete 1 of them before the night is up, otherwise you'll be springlocked!`
+        document.getElementById("rumorText").innerText = "Need help blending in?";
+        document.getElementById("killerHint").innerText = `Random Survivor Task: ${game.randomSurvivorTask}...`;
     }
 
-    document.getElementById("killerHint").innerText = game.killerHint;
 
     updateTaskList(game.tasks);
 }
 
-GET("/getGame/" + cookies.session.name).then((game) => {
-    onGameUpdate(game);
-}).catch((err) => {
-    console.log(err);
-    ERROR(err);
-})
+updateGame();
+function updateGame() {
+    GET("/getGame/" + cookies.session.name).then((game) => {
+        onGameUpdate(game);
+    }).catch((err) => {
+        console.log(err);
+        ERROR(err);
+    });
+}
 
 let lastHTML = "";
 function updateTaskList(tasks) {
@@ -49,7 +55,7 @@ function updateTaskList(tasks) {
         <div class="container jitter taskBox ${tasks[i].completed ? "taskCompleted" : ""}">
             <p id="taskTitle" class="jitter">Your Task:</p>
             <p id="task" class="jitter">${tasks[i].task}</p>
-            <button id="completedTaskButton" onclick=" ${tasks[i].completed ? "" : `completeTask('${i}')`}" class="jitter">${tasks[i].completed ? "Task Completed!" : "I completed this task!"}</button>
+            <button id="completedTaskButton" onclick=" ${tasks[i].completed ? "" : `completeTask('${i}')`}" class="jitter">${tasks[i].completed ? `Task Completed${tasks[i].by ? ` by ${tasks[i].by}` : "" }!` : "I completed this task!"}</button>
         </div>
         `;
     }
@@ -75,3 +81,8 @@ function completeTask(index) {
         ERROR(err);
     })
 }
+
+addWSListener((data) => {
+    if(data.type == "update")
+        updateGame();
+});
