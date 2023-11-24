@@ -49,6 +49,7 @@ class Game {
     ownerName;
 
     lastKilled;
+    springlocked;
 
     constructor() {
         this.survivors = [];
@@ -188,6 +189,13 @@ class Game {
         }
 
         if(this.survivors.length == 0) {
+            this.gameOver();
+            return;
+        }
+        
+        // if killers didn't do their tasks, get springlocked
+        if(this.killers[0].getCompletedTasks() < 1) {
+            this.springlocked = true;
             this.gameOver();
             return;
         }
@@ -690,7 +698,10 @@ exports.VOTE_SKIP = () => {
 }
 
 exports.WHO_WON = () => {
-    return GAME?.whoWon();
+    return {
+        "result": GAME?.whoWon(),
+        "springlocked": GAME.springlocked
+    }
 }
 
 exports.RESTART_GAME = () => {

@@ -150,7 +150,7 @@ app.post("/voteSkip", (req, res) => {
 });
 
 app.get("/whoWon", (req, res) => {
-    res.json({"result": ROOT.GAME.WHO_WON()});
+    res.json(ROOT.GAME.WHO_WON());
 });
 
 app.post("/restartGame", (req, res) => {

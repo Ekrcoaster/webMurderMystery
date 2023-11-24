@@ -16,6 +16,10 @@ function onGameUpdate(game) {
         location.href = "/app/voting.html";
         return;
     }
+    if(game.state == "gameOver") {
+        location.href = "/app/gameOver.html";
+        return;
+    }
 
     console.log(game);
     let nights = document.getElementsByClassName("nightLabel");
@@ -128,7 +132,6 @@ addWSListener((data) => {
 
 function endRound() {
     POST("/endRound", {}).then((data) => {
-
     }).catch((err) => {
 
     });
