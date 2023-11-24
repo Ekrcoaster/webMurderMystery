@@ -35,10 +35,15 @@ function onGameUpdate(game) {
         document.getElementById("instructions").innerHTML = `You are WILLIAM AFTON (the killer)! You've been given a bunch of tasks, you must complete 1 of them before the night is up, otherwise you'll be springlocked!`
         document.getElementById("rumorText").innerText = "Need help blending in?";
         document.getElementById("killerHint").innerText = `Random Survivor Task: ${game.randomSurvivorTask}...`;
+
     }
 
     updateTaskList(game.tasks);
     document.getElementById("settingsButton").style.display = game.isAdmin ? "block" : "none";
+
+    if(game.role = "Killer" && game.tasksCompleted >= game.tasksNeeded) {
+        updateTaskListWithVote(game.votes, game.killersLeft);
+    }
 
     if(game.isAlive == false) {
         document.getElementById("instructions").innerHTML = `You have been killed! You can no longer complete tasks or participate in voting!`
@@ -82,6 +87,28 @@ function updateTaskList(tasks) {
     document.getElementById("taskContainer").style.height = (tipY - containerY-50) + "px";
 }
 
+function updateTaskListWithVote(aliveSurvivors, totalKillers) {
+    let html = "";
+
+    html += `<p class="jitter">Choose someone to vote for... ALL killers must agree!</p>`
+    for(let i = 0; i < aliveSurvivors.length; i++) {
+        let percent = ((1 / totalKillers) * aliveSurvivors[i].votedForBy.length)*100;
+        html += `
+        <button class="container jitter killerVoteBox" onclick="killerVoteFor('${aliveSurvivors[i].name}')" 
+            style="background: linear-gradient(to right, #a40f0f ${percent}%, #ffffff00 ${percent}%);">
+            ${aliveSurvivors[i].name}
+        </button>
+        `;   
+    }
+    
+    if(lastHTML == html) return;
+    document.getElementById("taskContainer").innerHTML = html;
+
+    let tipY = document.getElementById("tipContainer").getBoundingClientRect().top;
+    let containerY = document.getElementById("taskContainer").getBoundingClientRect().top;
+    document.getElementById("taskContainer").style.height = (tipY - containerY-50) + "px";
+}
+
 function completeTask(index) {
     console.log("marking task complete " + index);
     POST("/completeTask", {
@@ -104,5 +131,16 @@ function endRound() {
 
     }).catch((err) => {
 
+    });
+}
+
+function killerVoteFor(voteFor) {
+    POST("/killerVoteFor", {
+        "name": cookies.session.name,
+        "votedFor": voteFor
+    }).then((data) => {
+        onGameUpdate(data.game);
+    }).catch((err) => {
+        ERROR(err);
     });
 }

@@ -38,7 +38,6 @@ class Lobby {
     }
 }
 
-let lastWon = null;
 class Game {
     /**@type {Survivor[]} */
     survivors;
@@ -49,13 +48,13 @@ class Game {
     roundCount = 0;
     ownerName;
 
+    lastKilled;
+
     constructor() {
         this.survivors = [];
         this.killers = [];
         this.setState("lobby");
         this.ownerName = null;
-
-        this.gameStart();
     }
 
     gameStart() {
@@ -156,6 +155,8 @@ class Game {
             return;
         }
 
+        this.voteWinner = null;
+
         this.setState("round");
         this.roundCount++;
 
@@ -166,11 +167,10 @@ class Game {
         }
 
         // gameStart killers, they should share tasks
-        let chosenKillerTasks = [];
         for(let i = 0; i < this.killers.length; i++) {
             this.killers[i].onBeginRound();
             if(i == 0) {
-                chosenKillerTasks = this.killers[i].chooseTasks(Object.keys(tasks.killers));
+                this.killers[i].chooseTasks(Object.keys(tasks.killers));
             } else {
                 this.killers[i].tasks = this.killers[0].tasks;
             }
@@ -179,6 +179,18 @@ class Game {
 
     endRound() {
         this.setState("voting");
+
+        let voteWinner = this.getVoteWinner();
+        if(voteWinner != null) {
+            this.voteOut(voteWinner);
+            this.lastKilled = voteWinner;
+            console.log(`Voted out ${voteWinner}`);
+        }
+
+        if(this.survivors.length == 0) {
+            this.gameOver();
+            return;
+        }
 
         for(let i = 0; i < this.survivors.length; i++) {
             this.survivors[i].onRoundEnd();
@@ -264,9 +276,41 @@ class Game {
         for(let i = 0; i < this.killers.length; i++) {
             this.killers[i].onGameOver();
         }
+    }
 
-        lastWon = this.getKillersLeft() == 0 ? "survivor" : "killer";
-        GAME = null;
+    whoWon() {
+        return this.getKillersLeft() == 0 ? "survivor" : "killer";
+    }
+
+    getVotes() {
+        let votes = [];
+
+        for(let i = 0; i < this.survivors.length; i++) {
+            if(this.survivors[i].isAlive) {
+                let votingForMe = [];
+                for(let j = 0; j < this.killers.length; j++) {
+                    if(this.killers[j].votingForThisRound == this.survivors[i].name)
+                        votingForMe.push(this.killers[j].name);
+                }
+                votes.push({
+                    name: this.survivors[i].name,
+                    votedForBy: votingForMe
+                });
+            }
+        }
+
+        return votes;
+    }
+
+    getVoteWinner() {
+        let votes = this.getVotes();
+
+        for(let i = 0; i < votes.length; i++) {
+            if(votes[i].votedForBy.length >= this.getKillersLeft()) {
+                return votes[i].name;
+            }
+        }
+        return null;
     }
 }
 
@@ -425,18 +469,30 @@ class Survivor extends Person {
         this.tasksGiven = 1;
     }
 
-    getType() { return "Survivor" }
+    getType() { return "Dead Child" }
 }
 
 class Killer extends Person {
+
+    votingForThisRound = null;
 
     constructor(data, game) {
         super(data, game);
         this.tasksNeeded = 3;
         this.tasksGiven = 5;
+        this.votingForThisRound = null;
     }
 
     getType() { return "Killer" }
+
+    onBeginRound() {
+        super.onBeginRound();
+        this.votingForThisRound = null;
+    }
+
+    voteFor(name) {
+        this.votingForThisRound = name;
+    }
 }
 
 
@@ -552,6 +608,7 @@ exports.GET_GAME = (name) => {
         "state": GAME.state,
         "intendedPage": GAME.getIntendedPage(),
         "killersLeft": GAME.getKillersLeft(),
+        "survivorsLeft": GAME.getSurvivorsLeft(),
         "tasks": myPlayer.exportTasks(),
         "tasksNeeded": myPlayer.tasksNeeded,
         "tasksCompleted": myPlayer.getCompletedTasks(),
@@ -559,7 +616,9 @@ exports.GET_GAME = (name) => {
         "randomSurvivorTask": GAME.getRandomSurvivorTask(),
         "isAdmin": GAME.ownerName == name,
         "alivePlayers": GAME.getAlivePlayerNames(),
-        "isAlive": myPlayer.isAlive
+        "isAlive": myPlayer.isAlive,
+        "votes": GAME.getVotes(),
+        "votesWinner": GAME.lastKilled == null ? GAME.getVoteWinner() : GAME.lastKilled
     };
 }
 
@@ -631,7 +690,35 @@ exports.VOTE_SKIP = () => {
 }
 
 exports.WHO_WON = () => {
-    return lastWon;
+    return GAME?.whoWon();
+}
+
+exports.RESTART_GAME = () => {
+    return new Promise((resolve, reject) => {
+        if(GAME == null) {reject("Game doesn't exist!");}
+        
+        GAME = null;
+        
+        resolve({
+            "ok": true
+        });
+    });
+}
+
+exports.KILLER_VOTE_FOR = (name, votedFor) => {
+    return new Promise((resolve, reject) => {
+        if(GAME == null) {reject("Game doesn't exist!");}
+        
+        let myPlayer = GAME.getPlayer(name);
+        if(myPlayer == null) {reject("Player doesn't exist: " + name)};
+
+        if(!(myPlayer instanceof Killer)) return reject("Only killers can vote!");
+        myPlayer.voteFor(votedFor);
+
+        resolve({
+            "game": exports.GET_GAME(name)
+        });
+    });
 }
 
 /**

@@ -119,7 +119,8 @@
 }
 
 #taskContainer {
-    overflow-y: scroll;
+    overflow-y: auto;
+    overflow-x: hidden;
 }
 
 .taskBox {
@@ -134,4 +135,12 @@
 .taskCompleted {
     opacity: 0.2;
     pointer-events: none;
+}
+
+.killerVoteBox {
+    display: block;
+    margin-bottom: 10px;
+    padding: 0px;
+    overflow: hidden;
+    padding-left: 10px;
 }

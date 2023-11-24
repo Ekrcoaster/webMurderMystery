@@ -153,6 +153,22 @@ app.get("/whoWon", (req, res) => {
     res.json({"result": ROOT.GAME.WHO_WON()});
 });
 
+app.post("/restartGame", (req, res) => {
+    ROOT.GAME.RESTART_GAME().then((data) => {
+        res.json(data);
+    }).catch((err) => {
+        res.json({"error": err.toString()});
+    });
+});
+
+app.post("/killerVoteFor", (req, res) => {
+    ROOT.GAME.KILLER_VOTE_FOR(req.body.name, req.body.votedFor).then((data) => {
+        res.json(data);
+    }).catch((err) => {
+        res.json({"error": err.toString()});
+    });
+});
+
 // -----------------
 //    SESSIONS
 // -----------------

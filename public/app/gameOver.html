@@ -18,7 +18,7 @@
             <p id="result">Survivors have won!</p>
         </div>
 
-        <a href ='/index.html'>Restart Game</a>
+        <button onclick="restart()">Restart Game</a>
     </div>
 
     <img src="../assets/static.gif" class="fadeInStatic">
@@ -35,6 +35,11 @@
             else
                 document.getElementById("result").innerText = `William Afton has won!`;
         });
+
+        function restart() {
+            POST("/restartGame", {});
+            location.href = "/index.html";
+        }
     </script>
 </body>
 </html>

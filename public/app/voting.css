@@ -5,3 +5,8 @@
     top: 50%;
     translate: -50px -50px;
 }
+
+#votedOut {
+    font-size: 25px;
+    color: rgb(180, 8, 8);
+}

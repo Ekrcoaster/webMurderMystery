@@ -37,7 +37,8 @@ html, body {
     padding: 20px;
     color: rgba(255, 255, 255, 0.494);
     font-size: 25px;
-    overflow-y: auto;
+    overflow: auto;
+    overflow-x: none;
 }
 
 h1 {

@@ -4,13 +4,20 @@ let cookies = GET_COOKIES();
 setTimeout(() => {
     document.getElementById("nightTransition").style.display = "block";
     document.getElementById("nightOverlay").style.display = "none";
+    if(gameCache.survivorsLeft == 0) {
+        location.href = "/app/gameOver.html";
+        return;
+    }
 }, 6000);
 
+var gameCache;
 function onGameUpdate(game) {
+    gameCache = game;
     if(game.error) {
         ERROR(game.error);
         return;
     }
+
 
     if(game.state == "round") {
         location.href = "/app/night.html";
@@ -22,6 +29,7 @@ function onGameUpdate(game) {
     }
 
     document.getElementById("adminController").style.display = game.isAdmin ? "block" : "none";
+    document.getElementById("votedOut").innerHTML = game.votesWinner != null ? `The killers have decided to murder ${game.votesWinner}! They are DEAD!` : "The killers couldn't kill anyone or couldn't agree on who to kill... everyone is safe";
     fillVotingOptions(game.alivePlayers);
     console.log(game);
 }
