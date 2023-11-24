@@ -38,6 +38,7 @@ class Lobby {
     }
 }
 
+let lastWon = null;
 class Game {
     /**@type {Survivor[]} */
     survivors;
@@ -46,11 +47,13 @@ class Game {
     /**@type {GameState} */
     state;
     roundCount = 0;
+    ownerName;
 
     constructor() {
         this.survivors = [];
         this.killers = [];
         this.setState("lobby");
+        this.ownerName = null;
 
         this.gameStart();
     }
@@ -125,6 +128,8 @@ class Game {
     getIntendedPage() {
         if(this.state == "lobby") return "/app/lobby.html";
         if(this.state == "round") return "/app/night.html";
+        if(this.state == "voting") return "/app/voting.html";
+        if(this.state == "gameOver") return "/app/gameOver.html"
 
         return "/app/notimplemented.html";
     }
@@ -137,7 +142,20 @@ class Game {
         return c;
     }
 
+    getSurvivorsLeft() {
+        let c = 0;
+        for(let i = 0; i < this.survivors.length; i++) {
+            c += this.survivors[i].isAlive ? 1 : 0;
+        }
+        return c;
+    }
+
     beginRound() {
+        if(this.getKillersLeft() == 0 || this.getSurvivorsLeft() == 0) {
+            this.gameOver();
+            return;
+        }
+
         this.setState("round");
         this.roundCount++;
 
@@ -156,6 +174,17 @@ class Game {
             } else {
                 this.killers[i].tasks = this.killers[0].tasks;
             }
+        }
+    }
+
+    endRound() {
+        this.setState("voting");
+
+        for(let i = 0; i < this.survivors.length; i++) {
+            this.survivors[i].onRoundEnd();
+        }
+        for(let i = 0; i < this.killers.length; i++) {
+            this.killers[i].onRoundEnd();
         }
     }
 
@@ -184,6 +213,60 @@ class Game {
 
     getRandomSurvivorTask() {
         return tasks.survivor[(this.roundCount * 100 + 524) % tasks.survivor.length];
+    }
+
+    voteOut(name) {
+        let player = this.getPlayer(name);
+        if(player == null) return null;
+
+        player.kill();
+
+        let role = player.getType();
+
+        for(let i = 0; i < this.survivors.length; i++) {
+            this.survivors[i].sendMessage({"type": "voteOver", "username": name, "role": role});
+        }
+        for(let i = 0; i < this.killers.length; i++) {
+            this.killers[i].sendMessage({"type": "voteOver", "username": name, "role": role});
+        }
+
+        return role;
+    }
+
+    voteSkip() {
+        for(let i = 0; i < this.survivors.length; i++) {
+            this.survivors[i].sendMessage({"type": "voteSkip"});
+        }
+        for(let i = 0; i < this.killers.length; i++) {
+            this.killers[i].sendMessage({"type": "voteSkip"});
+        }
+    }
+
+    getAlivePlayerNames() {
+        let playerNames = [];
+        for(let i = 0; i < this.survivors.length; i++) {
+            if(this.survivors[i].isAlive)
+                playerNames.push(this.survivors[i].name);
+        }
+        for(let i = 0; i < this.killers.length; i++) {
+            if(this.killers[i].isAlive)
+                playerNames.push(this.killers[i].name);
+        }
+        return playerNames;
+    }
+
+    gameOver() {
+        this.setState("gameOver");
+
+        for(let i = 0; i < this.survivors.length; i++) {
+            this.survivors[i].onGameOver();
+        }
+        for(let i = 0; i < this.killers.length; i++) {
+            this.killers[i].onGameOver();
+        }
+
+        lastWon = this.getKillersLeft() == 0 ? "survivor" : "killer";
+        GAME = null;
     }
 }
 
@@ -318,6 +401,19 @@ class Person {
     onBeginRound() {
         this.avoidTasks.push(...this.tasks);
         this.tasks = [];
+        this.sendMessage({"type": "update"});
+    }
+
+    onRoundEnd() {
+        this.sendMessage({"type": "update"});
+    }
+
+    kill() {
+        this.isAlive = false;
+    }
+
+    onGameOver() {
+        this.sendMessage({"type": "update"});
     }
 }
 
@@ -377,7 +473,7 @@ exports.CREATE_GAME = () => {
     });
 }
 
-exports.JOIN_GAME = (username) => {
+exports.JOIN_GAME = (name) => {
     return new Promise((resolve, reject) => {
         if(GAME != null) {
             resolve("REDIRECT");
@@ -386,7 +482,7 @@ exports.JOIN_GAME = (username) => {
         if(LOBBY == null) {reject("Lobby doesn't exist"); return;}
     
         LOBBY.addPlayer(new Person({
-            "name": username
+            "name": name
         }, null));
     
         resolve({ok: true});
@@ -429,12 +525,13 @@ exports.START_GAME = () => {
             }
         }
 
+        GAME.ownerName = LOBBY.players[0].name;
         GAME.gameStart();
 
         // tell players to redirect
         LOBBY.sendMessageToPlayers({
             type: "redirect",
-            url: GAME.getIntendedPage()
+            url: GAME == null ? "/app/gameOver.html" : GAME.getIntendedPage()
         });
 
         LOBBY = null;
@@ -443,10 +540,10 @@ exports.START_GAME = () => {
     });
 }
 
-exports.GET_GAME = (username) => {
+exports.GET_GAME = (name) => {
     if(GAME == null) return "Game doesn't exist!";
 
-    let myPlayer = GAME.getPlayer(username);
+    let myPlayer = GAME.getPlayer(name);
     if(myPlayer == null) return "Player doesn't exist!";
 
     return {
@@ -459,25 +556,82 @@ exports.GET_GAME = (username) => {
         "tasksNeeded": myPlayer.tasksNeeded,
         "tasksCompleted": myPlayer.getCompletedTasks(),
         "killerHint": GAME.getKillerHint(),
-        "randomSurvivorTask": GAME.getRandomSurvivorTask()
+        "randomSurvivorTask": GAME.getRandomSurvivorTask(),
+        "isAdmin": GAME.ownerName == name,
+        "alivePlayers": GAME.getAlivePlayerNames(),
+        "isAlive": myPlayer.isAlive
     };
 }
 
-exports.COMPLETE_TASK = (username, taskIndex) => {
+exports.COMPLETE_TASK = (name, taskIndex) => {
     return new Promise((resolve, reject) => {
         if(GAME == null) {reject("Game doesn't exist!");}
 
-        let myPlayer = GAME.getPlayer(username);
-        if(myPlayer == null) {reject("Player doesn't exist: " + username)};
-
-        console.log("COMPLETD TASK");
+        let myPlayer = GAME.getPlayer(name);
+        if(myPlayer == null) {reject("Player doesn't exist: " + name)};
 
         myPlayer.completeTask(taskIndex);
         
         resolve({
-            "game": exports.GET_GAME(username)
+            "game": exports.GET_GAME(name)
         });
     });
+}
+
+exports.START_ROUND = () => {
+    return new Promise((resolve, reject) => {
+        if(GAME == null) {reject("Game doesn't exist!");}
+        
+        GAME.beginRound();
+        
+        resolve({
+            "ok": true
+        });
+    });
+}
+
+exports.END_ROUND = () => {
+    return new Promise((resolve, reject) => {
+        if(GAME == null) {reject("Game doesn't exist!");}
+        
+        GAME.endRound();
+        
+        resolve({
+            "ok": true
+        });
+    });
+}
+
+exports.VOTE_OUT = (votedOutname) => {
+    return new Promise((resolve, reject) => {
+        if(GAME == null) {reject("Game doesn't exist!");}
+        
+        let role = GAME.voteOut(votedOutname);
+        if(role == null) {
+            reject("Player " + votedOutname + " doesn't exist!");
+            return;
+        }
+        
+        resolve({
+            "role": role
+        });
+    });
+}
+
+exports.VOTE_SKIP = () => {
+    return new Promise((resolve, reject) => {
+        if(GAME == null) {reject("Game doesn't exist!");}
+        
+        GAME.voteSkip();
+        
+        resolve({
+            "ok": true
+        });
+    });
+}
+
+exports.WHO_WON = () => {
+    return lastWon;
 }
 
 /**

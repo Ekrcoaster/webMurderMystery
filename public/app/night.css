@@ -43,7 +43,8 @@
     100% {
         opacity: 1;
     }
-}@keyframes nightIntroduceSubtitleFadeIn {
+}
+@keyframes nightIntroduceSubtitleFadeIn {
     0% {
         opacity: 0;
     }

@@ -34,6 +34,14 @@
         <p style="opacity: 0;" id="nightIntroduceLabel" class="jitter nightLabel">Night 1</p>
         <p style="opacity: 0;" id="nightSubtitleLabel" class="jitter">2 Killers Remain...</p>
     </div>
+
+    <button id="settingsButton" onclick="document.getElementById('settingsButtonModal').style.display = 'block';">C</button>
+    <div id="settingsButtonModal">
+        <h1 style="font-size: 55px;">Settings</h1>
+        <button onclick="endRound()">End Night</button>
+        <button onclick="document.getElementById('settingsButtonModal').style.display = 'none';">Close</button>
+    </div>
+
     <img src="../assets/static.gif" id="nightTransition" class="fadeInStatic">
 
     <script src="../artist.js"></script>

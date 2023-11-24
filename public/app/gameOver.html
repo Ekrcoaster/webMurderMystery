@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=200, initial-scale=1.0">
+    <title>Over - Murder Mystery</title>
+    <link rel="stylesheet" href="../css/main.css">
+    <link rel="stylesheet" href="./lobby.css">
+    <link rel="stylesheet" href="./gameOver.css">
+</head>
+<body>
+    <img class="backgroundImage" id="backgroundImage" src="../assets/background3.jpg">
+    <img class="backgroundImage" id="staticImage" src="../assets/static.gif">
+
+    <div id="page">
+        <div id="center">
+            <h1 class="jitter">GAME OVER</h1>
+            <p id="result">Survivors have won!</p>
+        </div>
+
+        <a href ='/index.html'>Restart Game</a>
+    </div>
+
+    <img src="../assets/static.gif" class="fadeInStatic">
+
+    <script src="../artist.js"></script>
+    <script src="../backgroundAnimate.js"></script>
+    <script>
+        animateBackground(".");
+    </script>
+    <script>
+        GET("/whoWon").then((res) => {
+            if(res.result == "survivor")
+                document.getElementById("result").innerText = `The children have won!`;
+            else
+                document.getElementById("result").innerText = `William Afton has won!`;
+        });
+    </script>
+</body>
+</html>

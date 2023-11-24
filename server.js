@@ -101,8 +101,8 @@ app.post("/startGame", (req, res) => {
     });
 });
 
-app.get("/getGame/:USERNAME", (req, res) => {
-    let game = ROOT.GAME.GET_GAME(req.params.USERNAME);
+app.get("/getGame/:name", (req, res) => {
+    let game = ROOT.GAME.GET_GAME(req.params.name);
     if(typeof(game) == "string")
         res.json({"error": game});
     else
@@ -115,7 +115,43 @@ app.post("/completeTask", (req, res) => {
     }).catch((err) => {
         res.json({"error": err.toString()});
     });
-})
+});
+
+app.post("/startRound", (req, res) => {
+    ROOT.GAME.START_ROUND().then((data) => {
+        res.json(data);
+    }).catch((err) => {
+        res.json({"error": err.toString()});
+    });
+});
+
+app.post("/endRound", (req, res) => {
+    ROOT.GAME.END_ROUND().then((data) => {
+        res.json(data);
+    }).catch((err) => {
+        res.json({"error": err.toString()});
+    });
+});
+
+app.post("/voteOut", (req, res) => {
+    ROOT.GAME.VOTE_OUT(req.body.name).then((data) => {
+        res.json(data);
+    }).catch((err) => {
+        res.json({"error": err.toString()});
+    });
+});
+
+app.post("/voteSkip", (req, res) => {
+    ROOT.GAME.VOTE_SKIP().then((data) => {
+        res.json(data);
+    }).catch((err) => {
+        res.json({"error": err.toString()});
+    });
+});
+
+app.get("/whoWon", (req, res) => {
+    res.json({"result": ROOT.GAME.WHO_WON()});
+});
 
 // -----------------
 //    SESSIONS

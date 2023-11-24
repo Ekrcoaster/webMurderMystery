@@ -12,13 +12,18 @@ function onGameUpdate(game) {
         return;
     }
 
+    if(game.state == "voting") {
+        location.href = "/app/voting.html";
+        return;
+    }
+
     console.log(game);
     let nights = document.getElementsByClassName("nightLabel");
     for(let i = 0; i < nights.length; i++) {
         nights.item(i).innerHTML = `Night ${game.roundCount+1}`;
     }
 
-    document.getElementById("nightSubtitleLabel").innerHTML = `${game.killersLeft} killer${game.killersLeft == 1 ? "" : "s"} left...`;
+    document.getElementById("nightSubtitleLabel").innerHTML = `${game.killersLeft} killer${game.killersLeft == 1 ? "" : "s"} remains...`;
 
     document.getElementById("tasksCompletedLabel").innerHTML = `${game.tasksCompleted}/${game.tasksNeeded} Tasks Completed`;
 
@@ -32,8 +37,15 @@ function onGameUpdate(game) {
         document.getElementById("killerHint").innerText = `Random Survivor Task: ${game.randomSurvivorTask}...`;
     }
 
-
     updateTaskList(game.tasks);
+    document.getElementById("settingsButton").style.display = game.isAdmin ? "block" : "none";
+
+    if(game.isAlive == false) {
+        document.getElementById("instructions").innerHTML = `You have been killed! You can no longer complete tasks or participate in voting!`
+        document.getElementById("rumorText").innerText = "Want to keep playing? Here is a random survivor task you can try!";
+        document.getElementById("killerHint").innerText = `Random Survivor Task: ${game.randomSurvivorTask}...`;
+        updateTaskList([]);
+    }
 }
 
 updateGame();
@@ -86,3 +98,11 @@ addWSListener((data) => {
     if(data.type == "update")
         updateGame();
 });
+
+function endRound() {
+    POST("/endRound", {}).then((data) => {
+
+    }).catch((err) => {
+
+    });
+}

@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=200, initial-scale=1.0">
+    <title>Voting - Murder Mystery</title>
+    <link rel="stylesheet" href="../css/main.css">
+    <link rel="stylesheet" href="./night.css">
+    <link rel="stylesheet" href="./voting.css">
+</head>
+<body>
+    <img class="backgroundImage" id="staticImage" src="../assets/static.gif">
+
+    <div id="page">
+        <h1 style="opacity: 0.2;" class="jitter nightLabel">Voting</h1>
+        <p class="jitter" id="instructions">Its time to vote! In person, share who you think may be the killer! Who ever gets voted out will be killed and their role will be revealed!</p>
+        
+        <div id="adminController" class="container jitter">
+            <p class="jitter" id="instructions">If someone gets voted out, select their name below to start the next night!</p>
+            <div style="margin: auto; display: block; text-align: center;">
+                <label>Who got voted out?</label>
+                <select id="playerVoteSelect">
+                    <option>---</option>
+                    <option>Test</option>
+                </select>
+            </div>
+
+            <p class="jitter" id="instructions">You may also skip voting for tonight!</p>
+            <button style="margin: auto;display: block;" onclick="skipVoting()">Skip Voting</button>
+        </div>
+
+        <div id="tipContainer" class="jitter">
+            <img class="jitter" src="../assets/TheWarningSign.webp">
+            <p class="jitter"><span id="rumorText" class="strong">Rumor has it...</span><br><span id="killerHint">The killers have been tasked with killing a person or something...</span></p>
+        </div>
+    </div>
+
+    <div id="nightOverlay">
+        <img style="opacity: 0;" id="nightIntroduceLabel" class="jitter nightLabel" src="../assets/timeChange.gif">
+
+        <p style="opacity: 0;" id="nightOverlayMessage"></p>
+        <p style="opacity: 0;" id="nightOverlaySubtitle"></p>
+    </div>
+
+    <img src="../assets/static.gif" id="nightTransition" class="fadeInStatic">
+
+    <script src="../artist.js"></script>
+    <script src="../backgroundAnimate.js"></script>
+    <script src="./voting.js"></script>
+</body>
+</html>

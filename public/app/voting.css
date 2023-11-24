@@ -1,0 +1,7 @@
+#nightIntroduceLabel {
+    position: fixed;
+    width: 100px;
+    left: 50%;
+    top: 50%;
+    translate: -50px -50px;
+}

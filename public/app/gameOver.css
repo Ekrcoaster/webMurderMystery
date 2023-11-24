@@ -1,0 +1,27 @@
+p {
+    font-size: 25px;
+    margin: 0px;
+}
+
+#center {
+    width: 100%;
+    padding: 10px;
+    position: fixed;
+    top: 50%;
+    left: 0px;
+    translate: 0px -50%;
+}
+
+h1 {
+    margin: 0px;
+}
+
+a {
+    color: rgba(255, 255, 255, 0.392);
+    position: fixed;
+    bottom: 5px;
+    position: absolute;
+    width: 150px;
+    left: 50%;
+    transform: translate(-15px, 0px);
+}

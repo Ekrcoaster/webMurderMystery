@@ -16,8 +16,9 @@ function refresh() {
     }).catch((err) => {
         if(typeof(err) == "object" && err.redirect)
             window.location.href = err.redirect;
-        else
-            window.location.href = "/index.html"
+        else {
+            //window.location.href = "/index.html"
+        }
     });
 
 }
