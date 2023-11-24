@@ -17,6 +17,11 @@
             <br><br>To begin, enter your name down below!<br><br>
             <label>Your Name:</label><br>
             <input type="text" id="joinName" placeholder="Enter your name..."><br><br>
+
+            <label>Killer Count:</label><br>
+            <input type="number" id="killerCount" placeholder="Killer Count..." value="1" min="1"><br>
+            
+            <br>
             <button onclick="createGame()" id="joinButton">Create Game</button>
         </div>
     </div>
@@ -27,8 +32,12 @@
             let name = document.getElementById("joinName").value;
             if(name == null || name.trim().length < 2) {ERROR("Enter a valid name!"); return;}
             
+            let killCount = parseInt(document.getElementById("killerCount").value);
+            if(isNaN(killCount) || killCount < 1) {ERROR("Enter a valid killer count!"); return;}
+            
             POST("/createGame", {
-                "name": name
+                "name": name,
+                "killerCount": killCount
             }).then((res) => {
                 window.location.href = "/app/lobby.html"
             }).catch((err) => {

@@ -67,6 +67,10 @@ function updateGame() {
     });
 }
 
+setInterval(() => {
+    updateGame();
+}, 1000*4);
+
 let lastHTML = "";
 function updateTaskList(tasks) {
     let html = "";

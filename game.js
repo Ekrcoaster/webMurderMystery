@@ -9,8 +9,11 @@ class Lobby {
     /**@type {Person[]} */
     players;
 
+    killerCount = 1;
+
     constructor() {
         this.players = [];
+        this.killerCount = 1;
     }
 
     /**@param {Person} player */
@@ -320,6 +323,13 @@ class Game {
         }
         return null;
     }
+
+    onKillerChoosePoll() {
+        for(let i = 0; i < this.killers.length; i++) {
+            this.killers[i].sendMessage({"type": "update"});
+        }
+    
+    }
 }
 
 class Person {
@@ -500,6 +510,7 @@ class Killer extends Person {
 
     voteFor(name) {
         this.votingForThisRound = name;
+        this.game.onKillerChoosePoll();
     }
 }
 
@@ -528,10 +539,12 @@ exports.START = () => {
     }
 }
 
-exports.CREATE_GAME = () => {
+exports.CREATE_GAME = (killerCount) => {
     return new Promise((resolve, reject) => {
         if(GAME != null) {reject("Game already exists"); return;}
         LOBBY = new Lobby();
+        if(killerCount < 1) return reject("Killer count must be atleast 1");
+        LOBBY.killerCount = killerCount;
 
         resolve({ok: true});
     });
@@ -574,9 +587,19 @@ exports.START_GAME = () => {
         if(GAME != null) {reject("Game already exists"); return;}
         if(LOBBY == null) {reject("Lobby doesn't exist"); return;}
 
+        if(LOBBY.killerCount > LOBBY.players.length) return reject("Killer count must be less than the player count");
+
         GAME = new Game();
 
-        let killers = new Set(["test", "Phone"]);
+        // choose killers        
+        let killers = new Set();
+        for(let i = 0; i < LOBBY.killerCount; i++) {
+            let index = Math.floor(Math.random() * LOBBY.players.length);
+            while(killers.has(LOBBY.players[index].name)) {
+                index = Math.floor(Math.random() * LOBBY.players.length);
+            }
+            killers.add(LOBBY.players[index].name);
+        }
 
         // distrubute players
         for(let i = 0; i < LOBBY.players.length; i++) {

@@ -69,7 +69,7 @@ app.post("/joinGame", (req, res) => {
 });
 
 app.post("/createGame", (req, res) => {
-    ROOT.GAME.CREATE_GAME().then((data) => {
+    ROOT.GAME.CREATE_GAME(req.body.killerCount).then((data) => {
 
         // then add myself to the game
         ROOT.GAME.JOIN_GAME(req.body.name).then((data) => {
