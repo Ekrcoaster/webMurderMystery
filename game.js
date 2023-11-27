@@ -169,7 +169,7 @@ class Game {
         this.setState("round");
         this.roundCount++;
 
-        sendCupcake("Night " + this.roundCount + " has begun...");
+        sendCupcake("Night " + (this.roundCount+1) + " has begun...");
 
         // gameStart survivors
         for(let i = 0; i < this.survivors.length; i++) {
