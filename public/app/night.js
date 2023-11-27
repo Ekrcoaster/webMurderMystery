@@ -45,7 +45,7 @@ function onGameUpdate(game) {
     updateTaskList(game.tasks);
     document.getElementById("settingsButton").style.display = game.isAdmin ? "block" : "none";
 
-    if(game.role = "Killer" && game.tasksCompleted >= game.tasksNeeded) {
+    if(game.role == "Killer" && game.tasksCompleted >= game.tasksNeeded) {
         updateTaskListWithVote(game.votes, game.killersLeft);
     }
 
