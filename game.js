@@ -3,6 +3,11 @@
 const fs = require("fs");
 const tasks = require("./tasks.json");
 
+
+
+/**@type {WebSocket} */
+var wsCupcake;
+
 /**@typedef {("lobby"|"round"|"voting"|"gameOver")} GameState */
 
 class Lobby {
@@ -164,6 +169,8 @@ class Game {
         this.setState("round");
         this.roundCount++;
 
+        sendCupcake("Night " + this.roundCount + " has begun...");
+
         // gameStart survivors
         for(let i = 0; i < this.survivors.length; i++) {
             this.survivors[i].onBeginRound();
@@ -183,6 +190,8 @@ class Game {
 
     endRound() {
         this.setState("voting");
+
+        sendCupcake("6am", "bell");
 
         let voteWinner = this.getVoteWinner();
         if(voteWinner != null) {
@@ -222,6 +231,18 @@ class Game {
                 this.killers[i].tasks[taskIndex].by = player.name;
                 this.killers[i].sendMessage({"type": "update"});
             }
+
+            if(this.killers[0].getCompletedTasks() >= this.killers[0].tasksNeeded) {
+                let possible = [
+                    `A misty air fills the room...`, 
+                    `Watch your back bitches...`, 
+                    `The world shakes with some terrifying news...`, 
+                    `A sudden death fills the pizzaria`, 
+                    `Yall bitches are in for a suprise`,
+                    `Umm yea um`,
+                ];
+                sendCupcake(possible[Math.floor(Math.random() * possible.length)]);
+            }
         }
     }
 
@@ -253,6 +274,8 @@ class Game {
             this.killers[i].sendMessage({"type": "voteOver", "username": name, "role": role});
         }
 
+        sendCupcake(`${name} was voted out!..........They were a ${role}!`);
+
         return role;
     }
 
@@ -263,6 +286,8 @@ class Game {
         for(let i = 0; i < this.killers.length; i++) {
             this.killers[i].sendMessage({"type": "voteSkip"});
         }
+
+        sendCupcake(`No one was suspiscious enough to vote out... yet...`);
     }
 
     getAlivePlayerNames() {
@@ -287,6 +312,8 @@ class Game {
         for(let i = 0; i < this.killers.length; i++) {
             this.killers[i].onGameOver();
         }
+
+        sendCupcake(`GAME OVER! ${this.whoWon() == "survivor" ? "Missing Children have" : "William Afton has"} won!`);
     }
 
     whoWon() {
@@ -769,9 +796,21 @@ exports.ON_SOCKET_MESSAGE = (ws, obj) => {
         }
         return;
     }
+
+    if(obj.type == "cupcake") {
+        wsCupcake = ws;
+    }
 }
 
 exports.ON_SOCKET_DISCONNECT = (ws) => {
     if(LOBBY != null) LOBBY.socketDisconnect(ws);
     if(GAME != null) GAME.socketDisconnect(ws);
+}
+
+function sendCupcake(msg, type = "speak") {
+    if(wsCupcake == null) return;
+    wsCupcake.send(JSON.stringify({
+        "type": type,
+        "msg": msg
+    }));
 }
