@@ -63,7 +63,7 @@ function SETUP_WEBSOCKET(onOpen = () => {}) {
         //ws.close();
     };
 
-    ws = new WebSocket('wss://164.90.151.164');
+    ws = new WebSocket('ws://164.90.151.164');
     ws.onmessage = (event) => {
         ON_WEBSOCKET(JSON.parse(event.data));
     }
