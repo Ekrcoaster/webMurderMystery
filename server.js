@@ -173,15 +173,18 @@ app.post("/killerVoteFor", (req, res) => {
 //    SESSIONS
 // -----------------
 
-/**@typedef {{name: String, id: String, expires: Number}} Session */
+/**@typedef {{name: String, id: String, expires: Number, gameID: String}} Session */
 var sessions = {}
+
+let gameID = Math.round(Math.random()*100000000000000000).toString(16);
 
 /**@returns {Session} */
 function addSession(name) {
     let data = {
         name: name,
         id: (Math.random() * 100000000000000000).toString(16),
-        expires: Date.now() + 1000*60*60*24
+        expires: Date.now() + 1000*60*60*24,
+        gameID: gameID
     }
     sessions[name] = data;
     return data;
@@ -191,5 +194,6 @@ function addSession(name) {
 function getActiveSession(name) {
     if(sessions[name] == null) return null;
     if(sessions[name].expires < Date.now()) return null;
+    if(sessions[name].gameID != gameID) return null;
     return sessions[name];
 }
