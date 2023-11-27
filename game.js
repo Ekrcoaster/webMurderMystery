@@ -2,7 +2,7 @@
 
 const fs = require("fs");
 const tasks = require("./tasks.json");
-
+const server = require("./server");
 
 
 /**@type {WebSocket} */
@@ -759,6 +759,7 @@ exports.RESTART_GAME = () => {
         if(GAME == null) {reject("Game doesn't exist!");}
         
         GAME = null;
+        server.removeAllSessions();
         
         resolve({
             "ok": true
@@ -799,6 +800,9 @@ exports.ON_SOCKET_MESSAGE = (ws, obj) => {
 
     if(obj.type == "cupcake") {
         wsCupcake = ws;
+    }
+    if(obj.type == "restart") {
+        exports.RESTART_GAME();
     }
 }
 

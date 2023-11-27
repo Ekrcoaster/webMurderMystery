@@ -197,3 +197,7 @@ function getActiveSession(name) {
     if(sessions[name].gameID != gameID) return null;
     return sessions[name];
 }
+
+exports.removeAllSessions = () => {
+    sessions = {};
+}
