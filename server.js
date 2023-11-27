@@ -5,7 +5,7 @@ const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 const http = require('http');
 const webSocket = require('ws');
-const port = 3000;
+const port = 80;
 
 const app = express();
 

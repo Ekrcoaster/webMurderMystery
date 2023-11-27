@@ -63,7 +63,7 @@ function SETUP_WEBSOCKET(onOpen = () => {}) {
         //ws.close();
     };
 
-    ws = new WebSocket('wss://b4d6-2601-500-8681-7150-d14d-9ea1-4311-57d3.ngrok-free.app');
+    ws = new WebSocket('wss://164.90.151.164');
     ws.onmessage = (event) => {
         ON_WEBSOCKET(JSON.parse(event.data));
     }
