@@ -274,7 +274,7 @@ class Game {
             this.killers[i].sendMessage({"type": "voteOver", "username": name, "role": role});
         }
 
-        sendCupcake(`${name} was voted out!..........They were a ${role}!`);
+        //sendCupcake(`${name} was voted out!..........They were a ${role}!`);
 
         return role;
     }
