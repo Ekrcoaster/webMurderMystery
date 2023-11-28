@@ -120,7 +120,19 @@ const pfps = [
     "WitheredBonnie.webp",
     "WitheredChica.webp",
     "WitheredFoxy.webp",
-    "WitheredFreddy.webp"
+    "WitheredFreddy.webp",
+    "Ballora.webp",
+    "CircusBaby.webp",
+    "FuntimeFoxy.webp",
+    "BidyBab.webp",
+    "BonBon.webp",
+    "NightmareFreddy.webp",
+    "NightmareBonnie.webp",
+    "NightmareChica.webp",
+    "NightmareFoxy.webp",
+    "NightmareFredbear.webp",
+    "Nightmare.webp",
+    "Nightmarionne.webp",
 ]
 
 function GET_PFP(name) {
